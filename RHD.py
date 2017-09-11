@@ -53,7 +53,7 @@ def getPrimitive(U, P):
         delta = 10.0
         P[i].p = 10.0
         # do newton raphson iteration to get pressure
-        while abs(delta > 1e-13):
+        while abs(delta) > 1e-13:
             if P[i].p < (abs(U[i].mom) - U[i].erg - U[i].mass):
                 P[i].p = abs(U[i].mom) - U[i].erg - U[i].mass
             P[i].v   = U[i].mom / (U[i].erg + U[i].mass + P[i].p)
@@ -108,8 +108,10 @@ def updateBCs(U, P):
     P[-1].rho = 2.0 * P[-2].rho - P[-3].rho
     P[-1].v   = 2.0 * P[-2].v   - P[-3].v
     P[-1].p   = 2.0 * P[-2].p   - P[-3].p
-    P[-1].gam = 2.0 * P[-2].gam - P[-3].gam
-    P[-1].eps = 2.0 * P[-2].eps - P[-3].eps
+    P[-1].gam = getLorentz(P[-1].v)
+    P[-1].eps = P[-1].p / (GAMM1 * P[-1].rho)
+    #P[-1].gam = 2.0 * P[-2].gam - P[-3].gam
+    #P[-1].eps = 2.0 * P[-2].eps - P[-3].eps
     U[-1] = getConservative(P[-1])
 
 def getFluxSpeed(Pl, Pu, up):
